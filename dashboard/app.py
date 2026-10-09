@@ -63,8 +63,9 @@ if st.button("Submit", type="primary"):
                 if result.verdict == "abstain":
                     st.error("⚠️ **System Verdict:** ABSTAIN")
                     st.write("I do not have enough evidence to answer this question with high confidence.")
-                    st.write(f"**Reasons:** {'; '.join(result.reasons)}")
-                    st.write(result.output_text)
+                    st.write("**Reasons:**")
+                    for reason in result.reasons:
+                        st.write(f"- {reason}")
                     
                 else:
                     st.success("✅ **System Verdict:** VERIFIED")

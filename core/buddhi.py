@@ -100,10 +100,11 @@ class Buddhi:
         if checked.abstain or checked.confidence < self.abstain_threshold:
             verdict = Verdict.ABSTAIN
             if checked.abstain:
-                reasons.append("proposer set abstain=True")
+                reason_msg = checked.hetu if checked.hetu else "Manas (Proposer) abstained because the query is likely an opinion or lacks verifiable evidence."
+                reasons.append(f"Proposer Abstention: {reason_msg}")
             if checked.confidence < self.abstain_threshold:
                 reasons.append(
-                    f"confidence {checked.confidence:.2f} < threshold {self.abstain_threshold}"
+                    f"Confidence ({checked.confidence:.2f}) is below the required threshold ({self.abstain_threshold})."
                 )
         elif checked.adhyasa_flags:
             verdict = Verdict.FLAG_AND_ACCEPT
