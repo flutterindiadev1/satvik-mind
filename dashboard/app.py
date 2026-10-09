@@ -22,7 +22,7 @@ if "pipeline" not in st.session_state:
     st.session_state.pipeline = Pipeline(PipelineConfig())
 
 st.title("Sāttvic Mind")
-st.markdown("### 🧘 An AI that Thinks Before It Speaks")
+st.markdown("### 🧘 An epistemological reasoning engine to verify facts and logical arguments")
 
 # Sidebar for Config & Trace Logs
 with st.sidebar:

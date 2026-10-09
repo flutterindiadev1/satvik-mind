@@ -1,6 +1,6 @@
 # Sāttvic Mind: An Epistemologically Grounded AI
 
-**Goal:** Build an AI reasoning system that is calibrated, causally grounded, and free of self-serving distortion, using Advaita Vedānta's analysis of the human mind, knowledge, and error as the architectural blueprint.
+**Goal:** Build an epistemological reasoning engine to verify facts and logical arguments. This system is designed to be calibrated, causally grounded, and free of self-serving distortion, using Advaita Vedānta's analysis of the human mind, knowledge, and error as the architectural blueprint.
 
 **Core Hypothesis:** Modern LLM pipelines struggle with hallucination and overconfidence because they lack a structured internal cognitive architecture. By organizing the AI system around Advaita's account of the *Antaḥkaraṇa* (the inner instrument), the *Pramāṇas* (valid means of knowledge), and the two powers of *Avidyā* (veiling and projection), we produce measurably more reliable behavior.
 
