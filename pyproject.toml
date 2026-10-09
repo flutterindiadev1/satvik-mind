@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sattvic-mind"
+version = "0.1.0"
+description = "AI reasoning system grounded in Advaita Vedanta epistemology"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.7",
+    "openai>=1.30",
+    "anthropic>=0.28",
+    "python-dotenv>=1.0",
+    "opentelemetry-sdk>=1.24",
+    "opentelemetry-exporter-otlp>=1.24",
+    "structlog>=24.1",
+    "rich>=13.7",
+    "typer>=0.12",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+causal = [
+    "dowhy>=0.11",
+    "pgmpy>=0.1.26",
+    "networkx>=3.3",
+]
+memory = [
+    "psycopg[binary]>=3.1",
+    "pgvector>=0.3",
+]
+evals = [
+    "inspect-ai>=0.3",
+    "scipy>=1.13",
+]
+dev = [
+    "pytest>=8.2",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "ipykernel",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
