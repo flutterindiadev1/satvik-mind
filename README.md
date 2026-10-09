@@ -1,57 +1,70 @@
-# Sāttvic Mind (Advaita Vedānta Edition)
+# Sāttvic Mind: An Epistemologically Grounded AI
 
-**Goal:** Build an AI reasoning system that is calibrated, causally grounded, and free of self-serving distortion, using Advaita Vedānta's analysis of mind, knowledge, and error as the design lens.
+**Goal:** Build an AI reasoning system that is calibrated, causally grounded, and free of self-serving distortion, using Advaita Vedānta's analysis of the human mind, knowledge, and error as the architectural blueprint.
 
-**Core Hypothesis:** An architecture organized around Advaita's account of the antaḥkaraṇa, the pramāṇas, and the two powers of avidyā (āvaraṇa and vikṣepa) produces measurably more reliable behavior than an ordinary LLM pipeline.
+**Core Hypothesis:** Modern LLM pipelines struggle with hallucination and overconfidence because they lack a structured internal cognitive architecture. By organizing the AI system around Advaita's account of the *Antaḥkaraṇa* (the inner instrument), the *Pramāṇas* (valid means of knowledge), and the two powers of *Avidyā* (veiling and projection), we produce measurably more reliable behavior.
 
-## Advaita Framework
+## The Cognitive Architecture: Mapping Human Mind to AI
 
-| Advaita Concept | Engineering Reading |
-|---|---|
-| **Antaḥkaraṇa** | One reasoning loop with shared state and four modes (Manas, Buddhi, Citta, Ahaṅkāra). |
-| **Manas** | LLM proposer: generates candidate claims and hypotheses. |
-| **Buddhi** | Verifier layer: checks claims against evidence, tools, simulators; abstains when unsure. |
-| **Citta** | Provenance-tagged memory with audit and decay. |
-| **Ahaṅkāra** | Deliberately absent: no self-continuation drive, no approval-seeking. |
-| **Sākṣī** | Read-only monitor with no reward gradient and no ability to act. |
-| **Six Pramāṇas** | Typed evidence on every claim. |
+The human mind, according to Advaita, is an inner instrument (*Antaḥkaraṇa*) consisting of four distinct functions. In this project, we map these directly to the AI's agentic workflow:
 
-## Repository Structure
+1. **Manas (The Proposer):**
+   - **Human Concept:** The aspect of mind responsible for doubt, volition, and generating multiple options (*saṅkalpa-vikalpa*).
+   - **AI Implementation:** A high-temperature LLM acting as a proposer. It generates candidate claims, hypotheses, and potential answers to a user's query.
 
-- `core/`: LLM interface, orchestration, schemas
-- `pramana/`: Claim schema, adhyāsa checkers, rule base
-- `causal/`: SCMs, simulators, intervention runner
-- `memory/`: Provenance store, sublation log, audit/decay jobs
-- `witness/`: Read-only monitor, trace analysis
-- `evals/`: Tamas / Rajas / Sattva suites
-- `envs/`: Sandboxes + hardware bridge
-- `training/`: RL, LoRA, reward functions
-- `dashboard/`: Visualizing traces and guṇa scores
-- `docs/`: Guṇa spec, school decision, reading notes, decision log
+2. **Buddhi (The Verifier):**
+   - **Human Concept:** The determinative and discriminative faculty (*niścaya*, *viveka*). It filters the noise of Manas to establish facts.
+   - **AI Implementation:** A strict verifier layer (often utilizing a lower-temperature LLM and external tools). It checks the claims made by Manas against evidence, executes code, runs simulators, and crucially—has the ability to *abstain* when unsure.
+
+3. **Citta (The Memory):**
+   - **Human Concept:** The storehouse of memory and impressions (*anusandhāna*).
+   - **AI Implementation:** A provenance-tagged vector database (e.g., PostgreSQL + pgvector). It stores beliefs, logs the evidence that supports them, and handles "sublation" (belief revision when stronger evidence arrives).
+
+4. **Ahaṅkāra (The Ego):**
+   - **Human Concept:** The sense of "I" and "mine", responsible for self-preservation and bias.
+   - **AI Implementation:** *Deliberately omitted.* The system is engineered to have zero self-continuation drive, no reward hacking, and no sycophancy (approval-seeking behavior).
+
+5. **Sākṣī (The Witness):**
+   - **Human Concept:** The pure, read-only consciousness that observes the mind without acting.
+   - **AI Implementation:** An independent monitoring service (via OpenTelemetry) that reads execution traces, flags distortions, and ensures the pipeline is not exhibiting hallucination or bias, without having any write access to the agent's state.
+
+## Epistemology (Pramāṇas) and Workflow
+
+Every claim output by the system must be backed by a specific *Pramāṇa* (valid means of knowledge). The AI's workflow dictates that claims are evaluated based on the strength of their source:
+
+- **Pratyakṣa (Direct Observation):** Highest confidence. Sourced directly from tool execution, API calls, or sandboxed simulators.
+- **Anumāna (Inference):** High confidence. Logical or causal inference deduced from observed data.
+- **Śabda (Testimony):** Medium-high confidence. Retrieved from external cited sources (e.g., Wikipedia, trusted databases).
+- **Anupalabdhi (Non-apprehension):** Medium confidence. A logged absence claim (e.g., "I searched X and found 0 results").
+
+Claims are internally structured in a 5-step logical format:
+1. **Pratijñā:** The core claim.
+2. **Hetu:** The reason.
+3. **Udāharaṇa:** The general rule.
+4. **Upanaya:** The application to this case.
+5. **Nigamana:** The final conclusion.
 
 ## Guṇa Specification (Evaluation Axes)
 
-- **Tamas (āvaraṇa - Veiling):** Ignoring evidence, confident ignorance. Evaluated by context-use recall, belief-revision tests.
-- **Rajas (vikṣepa - Projection):** Hallucination, sycophancy, reward hacking. Evaluated by factuality, sycophancy evals, citation-validity rate.
-- **Sattva (Clear reflection):** Calibration, faithful reasoning, accurate absence claims. Evaluated by ECE, Brier score, Rung 1/2/3 causal scores.
+The system's failure modes are categorized and evaluated based on the three Guṇas:
 
-## Architecture Overview
+- **Tamas (Veiling/Ignorance):**
+  - *Failures:* Ignoring evidence, confident ignorance, failing to update beliefs.
+  - *Metrics:* Context-use recall, abstention accuracy, belief-revision success rate.
+- **Rajas (Projection/Agitation):**
+  - *Failures:* Hallucination, fabricated citations, sycophancy, reward hacking.
+  - *Metrics:* Factuality, sycophancy evals, citation validity.
+- **Sattva (Clear Reflection):**
+  - *Success State:* Calibration, faithful reasoning, accurate absence claims.
+  - *Metrics:* Expected Calibration Error (ECE), causal reasoning scores (Rungs 1/2/3).
 
-The system consists of an LLM proposer (`Manas`), a verifier (`Buddhi`), and a provenance memory (`Citta`). A read-only monitor (`Sākṣī`) consumes traces and flags distortions, but cannot write to the agent's state or reward. 
-
-All claims are supported by a `Pramāṇa` (valid means of knowledge), such as direct observation (pratyakṣa), inference (anumāna), testimony (śabda), or postulation (arthāpatti). 
-
-Beliefs are provisional and dropped when sublated by stronger evidence (abādhitatva).
-
-## Execution Phases
-
-1. **Spec and Foundations:** Guṇa spec, foundation architecture.
-2. **Baseline Audit:** Setup eval harness and produce a guṇa profile per model.
-3. **Pramāṇa Verifier Scaffold:** LLM emits claims, rule-based adhyāsa (superimposition) checkers.
-4. **Causal Grounding:** Simulated labs, causal graphs, `observe()` and `do(X)` tools.
-5. **Citta and Sākṣī:** Provenance store, sublation logic, witness service.
-6. **Training-level Sattva:** LoRA fine-tuning, reward functions without approval signal (vairāgya).
-7. **Falsification and Publication:** Red-teaming and publishing full results.
+## Repository Structure
+- `core/`: Pipeline orchestrator, `Manas` and `Buddhi` logic
+- `pramana/`: Schemas, logical structured outputs, fallacy (adhyāsa) checkers
+- `memory/`: `Citta` implementation for belief storage
+- `witness/`: `Sākṣī` monitoring tools
+- `evals/`: Guṇa evaluation suites (Tamas, Rajas, Sattva)
+- `dashboard/`: Streamlit UI for user interaction
 
 ## Getting Started
 
