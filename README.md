@@ -52,3 +52,17 @@ Beliefs are provisional and dropped when sublated by stronger evidence (abādhit
 5. **Citta and Sākṣī:** Provenance store, sublation logic, witness service.
 6. **Training-level Sattva:** LoRA fine-tuning, reward functions without approval signal (vairāgya).
 7. **Falsification and Publication:** Red-teaming and publishing full results.
+
+## Getting Started
+
+1. Create a `.env` file in the root directory (you can copy from `.env.example`) and add your API keys (e.g., `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`).
+2. Create a virtual environment and install the package:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -e .
+   ```
+3. Launch the Sāttvic Mind reasoning dashboard:
+   ```bash
+   streamlit run dashboard/app.py
+   ```
