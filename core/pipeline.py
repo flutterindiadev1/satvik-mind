@@ -44,9 +44,19 @@ class Pipeline:
     def run(self, query: str, extra_context: Optional[str] = None) -> BuddhiResult:
         run_id = tracer.new_run(query=query)
         
-        # In the future, we will query Citta first for sublated/held beliefs on this query.
+        # Query Citta first for held beliefs related to this query
+        past_beliefs = self.citta.search_beliefs(query)
+        memory_context = ""
+        if past_beliefs:
+            memory_context = "PREVIOUSLY VERIFIED BELIEFS (Use these if relevant):\n"
+            for b in past_beliefs:
+                memory_context += f"- {b['pratijna']} (Confidence: {b['confidence']})\n"
+                
+        full_context = extra_context or ""
+        if memory_context:
+            full_context = memory_context + "\n" + full_context
         
-        claim  = self.manas.propose(query, run_id=run_id, step=0, extra_context=extra_context)
+        claim  = self.manas.propose(query, run_id=run_id, step=0, extra_context=full_context.strip() or None)
         result = self.buddhi.verify(claim, run_id=run_id, query=query, step=1)
         
         if result.verdict == "accept" and claim:

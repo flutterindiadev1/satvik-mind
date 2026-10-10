@@ -114,3 +114,21 @@ class Citta:
             cursor = conn.execute("SELECT * FROM beliefs WHERE status = 'held'")
             return [dict(row) for row in cursor.fetchall()]
 
+    def search_beliefs(self, query: str, limit: int = 3) -> List[Dict[str, Any]]:
+        """Naive keyword search over held beliefs."""
+        keywords = [word for word in query.split() if len(word) > 3]
+        if not keywords:
+            return []
+            
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            
+            # Simple OR matching across practically all words
+            conditions = " OR ".join(["pratijna LIKE ? OR nigamana LIKE ?"] * len(keywords))
+            params = []
+            for k in keywords:
+                params.extend([f"%{k}%", f"%{k}%"])
+                
+            cursor = conn.execute(f"SELECT * FROM beliefs WHERE status = 'held' AND ({conditions}) LIMIT ?", params + [limit])
+            return [dict(row) for row in cursor.fetchall()]
+
