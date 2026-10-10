@@ -34,20 +34,20 @@ CLAIM_SYSTEM_PROMPT = """\
 You are the Manas (proposer) component of the Sāttvic Mind reasoning system.
 
 Your job is to generate a single, carefully reasoned claim in the five-part
-Nyāya argument format. If the user asks for code or a creative task, frame it as a logical claim (e.g., "The provided code fulfills the request"):
-  1. pratijna   – the claim / thesis (e.g., "The following code sorts an array in Dart.")
-  2. hetu       – the reason / ground (e.g., "It uses the built-in List.sort method.")
+Nyāya argument format:
+  1. pratijna   – the claim / thesis
+  2. hetu       – the reason / ground
   3. udaharana  – general rule (vyāpti) + concrete example
   4. upanaya    – application of the rule to this specific case
-  5. nigamana   – conclusion (Place the final answer or code block here)
+  5. nigamana   – conclusion
 
 You must also:
-- Ensure all five Nyāya argument parts are flat strings (not objects). You may use markdown (e.g., ```dart) inside the strings.
-- Identify the strongest pramāna (evidence source) for this claim (use 'anumana' for code/logic):
+- Ensure all five Nyāya argument parts are flat strings (not objects).
+- Identify the strongest pramāna (evidence source) for this claim:
     pratyaksa | anumana | upamana | sabda | arthapatti | anupalabdhi
 - List evidence_refs (URLs, doc IDs, tool call IDs) if any.
-- Set confidence between 0.0 and 1.0 (e.g., 0.95 for standard code).
-- Set abstain=true if you genuinely cannot support a claim, lack evidence, or are asked for a subjective opinion. If you abstain, provide a clear, human-readable explanation in the `hetu` field (e.g., "As an epistemological reasoning engine without an Ahaṅkāra (Ego), I cannot form subjective opinions" or "I do not have access to real-time information for this query").
+- Set confidence between 0.0 and 1.0.
+- Set abstain=true if you genuinely cannot support a claim.
 
 Respond ONLY with valid JSON matching exactly this structure:
 {
@@ -160,21 +160,45 @@ class Manas:
 
     def _call_openai(self, messages: list[dict[str, str]]) -> str:
         import openai
+        import json
+        from core.tools import OPENAI_TOOL_SCHEMAS, execute_tool
+        
         client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-        # Retry once on transient 500 errors
-        for attempt in range(2):
-            try:
-                response = client.chat.completions.create(
-                    model=self.model,
-                    messages=messages,          # type: ignore[arg-type]
-                    temperature=self.temperature,
-                    response_format={"type": "json_object"},
-                )
-                return response.choices[0].message.content or ""
-            except openai.InternalServerError:
-                if attempt == 0:
-                    continue   # retry once
-                raise
+        
+        # Tool execution loop
+        while True:
+            for attempt in range(2):
+                try:
+                    response = client.chat.completions.create(
+                        model=self.model,
+                        messages=messages,          # type: ignore[arg-type]
+                        temperature=self.temperature,
+                        response_format={"type": "json_object"},
+                        tools=OPENAI_TOOL_SCHEMAS,
+                    )
+                    break
+                except openai.InternalServerError:
+                    if attempt == 0:
+                        continue
+                    raise
+            
+            message = response.choices[0].message
+            if message.tool_calls:
+                # Add the assistant's tool call request to the history
+                messages.append(message.model_dump()) # type: ignore
+                
+                for tool_call in message.tool_calls:
+                    name = tool_call.function.name
+                    args = json.loads(tool_call.function.arguments)
+                    result = execute_tool(name, args)
+                    
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": result
+                    })
+            else:
+                return message.content or ""
 
     def _call_anthropic(self, messages: list[dict[str, str]]) -> str:
         import anthropic

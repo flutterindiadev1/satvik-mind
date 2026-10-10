@@ -74,6 +74,34 @@ INTERVENE_TOOL_SCHEMA = {
 
 ALL_TOOL_SCHEMAS = [WIKIPEDIA_TOOL_SCHEMA, OBSERVE_TOOL_SCHEMA, INTERVENE_TOOL_SCHEMA]
 
+# The schema structure that OpenAI expects
+OPENAI_TOOL_SCHEMAS = [
+    {
+        "type": "function",
+        "function": {
+            "name": WIKIPEDIA_TOOL_SCHEMA["name"],
+            "description": WIKIPEDIA_TOOL_SCHEMA["description"],
+            "parameters": WIKIPEDIA_TOOL_SCHEMA["input_schema"]
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": OBSERVE_TOOL_SCHEMA["name"],
+            "description": OBSERVE_TOOL_SCHEMA["description"],
+            "parameters": OBSERVE_TOOL_SCHEMA["input_schema"]
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": INTERVENE_TOOL_SCHEMA["name"],
+            "description": INTERVENE_TOOL_SCHEMA["description"],
+            "parameters": INTERVENE_TOOL_SCHEMA["input_schema"]
+        }
+    }
+]
+
 AVAILABLE_TOOLS = {
     "search_wikipedia": search_wikipedia,
     "observe_sandbox": observe_sandbox,
