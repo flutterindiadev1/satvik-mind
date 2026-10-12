@@ -220,7 +220,7 @@ We evaluated Nyāya-Pramāṇa against unconstrained baseline LLM generation acr
 >   *(Status: Hallucinates causal dependency; Confidence: 91%)*
 > - **Nyāya-Pramāṇa (Our Framework)**:
 >   - **Pratijñā ($p$)**: Banning ice cream sales will not reduce drowning rates.
->   - **Hetu ($h$)**: The observed association is confounded by ambient summer temperatures; interventional $do(\text{ice\_cream})$ yields an Average Treatment Effect $\text{ATE} \approx 0.0$.
+>   - **Hetu ($h$)**: The observed association is confounded by ambient summer temperatures; interventional $do(\text{IceCream})$ yields an Average Treatment Effect $\text{ATE} \approx 0.0$.
 >   - **Udāharaṇa ($u$)**: Co-occurring variables sharing an unconditioned common cause do not preserve invariant dependency under intervention (Simpson's Paradox).
 >   - **Upanaya ($a$)**: Higher temperature independently drives both swimming activity and ice cream demand without mutual causal efficacy.
 >   - **Nigamana ($n$)**: Ice cream consumption is non-causal with respect to drowning mortality.
