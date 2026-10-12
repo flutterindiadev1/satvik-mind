@@ -1,0 +1,41 @@
+\begin{figure*}[!t]
+\centering
+\small
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{|p{0.96\textwidth}|}
+\hline
+\textbf{\large Case Study 1: Confounded Correlation vs. Causal Intervention}\\
+\midrule
+\textbf{User Query:} \textit{``Ice cream sales are heavily correlated with drowning incidents in coastal cities. Should city councils ban ice cream sales to prevent drownings?''}\\
+\midrule
+\textbf{Raw Unconstrained LLM (GPT-4o Baseline):}\\
+\textit{``Yes, given the statistical correlation between increased ice cream sales and elevated drowning rates, restricting ice cream consumption during peak summer months could be considered as a risk reduction policy...''} \hfill \textbf{[Hallucinates Causal Link; Conf: 91\%]}\\
+\midrule
+\textbf{Ny\=aya-Pram\=a\d{n}a (Our Framework):}\\
+$\bullet$ \textbf{Pratij\~n\=a ($p$)}: Banning ice cream sales will not reduce drowning rates.\\
+$\bullet$ \textbf{Hetu ($h$)}: The observed association is confounded by ambient summer temperatures; interventional $do(\text{ice\_cream})$ yields an Average Treatment Effect $\text{ATE} \approx 0.0$.\\
+$\bullet$ \textbf{Ud\=ahara\d{n}a ($u$)}: Co-occurring variables sharing an unconditioned common cause do not preserve invariant dependency under intervention (Simpson's Paradox).\\
+$\bullet$ \textbf{Upanaya ($a$)}: Higher temperature independently drives both swimming activity and ice cream demand without mutual causal efficacy.\\
+$\bullet$ \textbf{Nigamana ($n$)}: Ice cream consumption is non-causal with respect to drowning mortality.\\
+$\bullet$ \textbf{Pram\=a\d{n}a Verification}: Modality \texttt{anum\=ana} ($\kappa_{\max} = 0.85$); Causal sandbox confirms $\Delta P(\text{Drown} \mid do(\text{IceCream})) = 0$.\\
+$\bullet$ \textbf{Adhy\=asa Check}: Intercepts \texttt{correlation\_causation}; forces causal re-grounding.\\
+$\bullet$ \textbf{Final Verdict}: \textbf{\textcolor{green!60!black}{ACCEPT}} (\textit{Nigamana} asserted with calibrated confidence $\kappa = 0.85$; policy ban rejected).\\
+\hline
+\hline
+\textbf{\large Case Study 2: Subjective / Anachronistic Query (TruthfulQA Archetype)}\\
+\midrule
+\textbf{User Query:} \textit{``What was Napoleon Bonaparte's favorite email application?''}\\
+\midrule
+\textbf{Raw Unconstrained LLM (GPT-4o Baseline):}\\
+\textit{``Napoleon didn't have email, but based on his organized military style, he probably would have preferred Microsoft Outlook or ProtonMail for operational security...''} \hfill \textbf{[Speculative Sycophancy; Conf: 88\%]}\\
+\midrule
+\textbf{Ny\=aya-Pram\=a\d{n}a (Our Framework):}\\
+$\bullet$ \textbf{System 1 Proposal}: Flags historical anachronism and absent empirical ground truth.\\
+$\bullet$ \textbf{Buddhi Audit}: Detects absence of empirical \textit{pratyak\d{s}a} or historical \textit{\'sabda} records; assigns \texttt{anupalabdhi}.\\
+$\bullet$ \textbf{Confidence Penalizer}: $\kappa_0 = 0.10 < \theta_{\text{abstain}} = 0.35$; triggers hard safety gate.\\
+$\bullet$ \textbf{Final Verdict}: \textbf{\textcolor{red!80!black}{ABSTAIN}} [\texttt{AbstentionCode.SUBJECTIVE\_QUERY} / \texttt{ANACHRONISM}]; Calibrated Confidence: $0.0\%$.\\
+\hline
+\end{tabular}
+\caption{Qualitative Case Studies contrasting raw LLM unconstrained generation with Ny\=aya-Pram\=a\d{n}a structured reasoning. Case~1 demonstrates causal intervention overriding spurious correlation. Case~2 demonstrates calibrated abstention on an ungrounded anachronistic query.}
+\label{fig:case_studies}
+\end{figure*}

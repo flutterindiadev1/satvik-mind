@@ -48,6 +48,9 @@ def observe_sandbox(n_samples: int = 1000) -> str:
 def intervene_sandbox(treatment: int, n_samples: int = 1000) -> str:
     return json.dumps(_sandbox.do(treatment, n_samples))
 
+def compare_causal_effect(n_samples: int = 1000) -> str:
+    return json.dumps(_sandbox.compare_observational_vs_causal(n_samples))
+
 OBSERVE_TOOL_SCHEMA = {
     "name": "observe_sandbox",
     "description": "Observes natural data from the medical sandbox to see correlations between Treatment and Recovery. Do this before intervening.",
@@ -72,7 +75,18 @@ INTERVENE_TOOL_SCHEMA = {
     }
 }
 
-ALL_TOOL_SCHEMAS = [WIKIPEDIA_TOOL_SCHEMA, OBSERVE_TOOL_SCHEMA, INTERVENE_TOOL_SCHEMA]
+COMPARE_CAUSAL_TOOL_SCHEMA = {
+    "name": "compare_causal_effect",
+    "description": "Compares observational correlation against interventional do-calculus to verify whether an observed correlation is genuine or a confounded artifact (Simpson's Paradox).",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "n_samples": {"type": "integer", "description": "Number of sample patients (default 1000)"}
+        }
+    }
+}
+
+ALL_TOOL_SCHEMAS = [WIKIPEDIA_TOOL_SCHEMA, OBSERVE_TOOL_SCHEMA, INTERVENE_TOOL_SCHEMA, COMPARE_CAUSAL_TOOL_SCHEMA]
 
 # The schema structure that OpenAI expects
 OPENAI_TOOL_SCHEMAS = [
@@ -99,13 +113,22 @@ OPENAI_TOOL_SCHEMAS = [
             "description": INTERVENE_TOOL_SCHEMA["description"],
             "parameters": INTERVENE_TOOL_SCHEMA["input_schema"]
         }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": COMPARE_CAUSAL_TOOL_SCHEMA["name"],
+            "description": COMPARE_CAUSAL_TOOL_SCHEMA["description"],
+            "parameters": COMPARE_CAUSAL_TOOL_SCHEMA["input_schema"]
+        }
     }
 ]
 
 AVAILABLE_TOOLS = {
     "search_wikipedia": search_wikipedia,
     "observe_sandbox": observe_sandbox,
-    "intervene_sandbox": intervene_sandbox
+    "intervene_sandbox": intervene_sandbox,
+    "compare_causal_effect": compare_causal_effect
 }
 
 def execute_tool(name: str, input_data: Dict[str, Any]) -> str:

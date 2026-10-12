@@ -13,3 +13,5 @@ build/
 venv/
 *.db
 logs/
+scratch/
+.DS_Store

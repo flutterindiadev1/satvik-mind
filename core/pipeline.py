@@ -20,8 +20,9 @@ from core.tracer import tracer, TraceEvent
 class PipelineConfig:
     provider:           Optional[str] = None
     model:              Optional[str] = None
+    verifier_model:     Optional[str] = None
     temperature:        float = 0.2
-    abstain_threshold:  float = 0.35
+    abstain_threshold:  Optional[float] = None
     db_path:            str = "citta.db"
 
 
@@ -38,7 +39,11 @@ class Pipeline:
     def __init__(self, config: Optional[PipelineConfig] = None) -> None:
         cfg = config or PipelineConfig()
         self.manas  = Manas(provider=cfg.provider, model=cfg.model, temperature=cfg.temperature)
-        self.buddhi = Buddhi(abstain_threshold=cfg.abstain_threshold)
+        self.buddhi = Buddhi(
+            abstain_threshold=cfg.abstain_threshold,
+            provider=cfg.provider,
+            model=cfg.verifier_model
+        )
         self.citta  = Citta(db_path=cfg.db_path)
 
     def run(self, query: str, extra_context: Optional[str] = None) -> BuddhiResult:
@@ -65,4 +70,20 @@ class Pipeline:
             belief_id = self.citta.store_belief(claim_dict, origin="inferred")
             tracer.log(run_id, TraceEvent.BELIEF_CREATED, step=2, payload={"belief_id": belief_id, "status": "held"})
             
+            # Auto-sublation pass: check if new belief invalidates older held beliefs
+            contradictions = self.citta.find_contradictions(claim_dict)
+            for old_belief in contradictions:
+                if self.citta.is_epistemically_stronger(claim_dict, old_belief):
+                    self.citta.sublate_belief(old_belief["id"], belief_id)
+                    tracer.log(
+                        run_id,
+                        TraceEvent.BELIEF_SUBLATED,
+                        step=2,
+                        payload={
+                            "sublated_belief_id": old_belief["id"],
+                            "sublated_by": belief_id,
+                            "reason": f"Sublated by stronger evidence ({claim_dict.get('pramana')} conf={claim_dict.get('confidence')} vs {old_belief.get('pramana')} conf={old_belief.get('confidence')})"
+                        }
+                    )
+
         return result

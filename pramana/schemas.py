@@ -6,7 +6,7 @@ All claims in the system must be instances of these types.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Literal, Optional
 
@@ -62,6 +62,20 @@ class AdhyasaLabel(str, Enum):
 
 
 # ---------------------------------------------------------------------------
+# Abstention codes – machine-readable classification for abstentions
+# ---------------------------------------------------------------------------
+
+class AbstentionCode(str, Enum):
+    PROPOSER_ABSTAINED     = "proposer_abstained"
+    LOW_CONFIDENCE         = "low_confidence"
+    SUBJECTIVE_QUERY       = "subjective_query"
+    IMPOSSIBLE_CROSS_REF   = "impossible_cross_ref"
+    FALLACY_PENALIZED      = "fallacy_penalized"
+    CORRELATION_NOT_CAUSAL = "correlation_not_causal"
+    UNVERIFIABLE_PREMISE   = "unverifiable_premise"
+
+
+# ---------------------------------------------------------------------------
 # Claim – five-member Nyāya format
 # ---------------------------------------------------------------------------
 
@@ -84,16 +98,20 @@ class Claim(BaseModel):
                                      description="IDs / URLs of supporting evidence")
 
     # Confidence and safety
-    confidence:    float = Field(ge=0.0, le=1.0,
-                                 description="Posterior confidence [0, 1]")
-    abstain:       bool  = Field(default=False,
-                                 description="True if the system should abstain from answering")
+    confidence:      float = Field(ge=0.0, le=1.0,
+                                   description="Posterior confidence [0, 1]")
+    abstain:         bool  = Field(default=False,
+                                   description="True if the system should abstain from answering")
+    abstention_code: Optional[AbstentionCode] = Field(
+        default=None,
+        description="Machine-readable code classifying why the system abstained"
+    )
 
     # Error flags (filled by the adhyāsa checker, not the proposer)
     adhyasa_flags: list[AdhyasaLabel] = Field(default_factory=list)
 
     # Provenance
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     def clamp_confidence(self) -> "Claim":
         """
@@ -125,7 +143,7 @@ class Belief(BaseModel):
     status:       Literal["held", "under_review", "sublated"] = "held"
     sublated_by:  Optional[str] = Field(default=None,
                                         description="ID of the belief/evidence that sublated this one")
-    created_at:       datetime = Field(default_factory=datetime.utcnow)
+    created_at:       datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     last_audited_at:  Optional[datetime] = None
 
     def sublate(self, by_id: str) -> "Belief":
@@ -133,7 +151,7 @@ class Belief(BaseModel):
         return self.model_copy(update={
             "status": "sublated",
             "sublated_by": by_id,
-            "last_audited_at": datetime.utcnow(),
+            "last_audited_at": datetime.now(timezone.utc),
         })
 
     @property
@@ -156,7 +174,7 @@ class AbsenceRecord(BaseModel):
     search_scope: str  = Field(description="Corpus, tool, or time range searched")
     tools_used:   list[str]
     result_count: int  = Field(ge=0, description="Must be 0 for a valid absence claim")
-    searched_at:  datetime = Field(default_factory=datetime.utcnow)
+    searched_at:  datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     def is_valid_absence(self) -> bool:
         return self.result_count == 0

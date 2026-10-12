@@ -1,0 +1,105 @@
+\begin{figure*}[t!]
+\centering
+\begin{tikzpicture}[
+    scale=0.88, every node/.style={transform shape},
+    box/.style={draw, rounded corners=3pt, thick, align=center, fill=white, inner sep=5pt},
+    sys1/.style={box, fill=blue!6, draw=blue!60},
+    sys2/.style={box, fill=orange!5, draw=orange!70},
+    gate/.style={box, fill=red!6, draw=red!60},
+    mem/.style={box, fill=green!6, draw=green!60},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick, draw=gray!80},
+    labelnode/.style={font=\bfseries\small, text=black!85}
+]
+
+% Query Node
+\node[box, fill=gray!10, text width=2.3cm] (query) at (0, 4.4) {
+    \textbf{User Query $q$}\\
+    \scriptsize Input Proposition
+};
+
+% System 1: Manas Proposer
+\node[sys1, text width=4.8cm, right=1.0cm of query] (manas) {
+    \textbf{System 1 Proposer (\textit{Manas})}\\
+    \scriptsize Foundation Model ($T=0.0$)\\
+    \rule{4.6cm}{0.4pt}\\
+    \scriptsize
+    $\mathcal{C} = \langle \text{Pratij\~n\=a}, \text{Hetu}, \text{Ud\=ahara\d{n}a}, \text{Upanaya}, \text{Nigamana} \rangle$\\
+    Proposed Modality $\pi \in \Pi$ \quad Confidence $\kappa_0 \in [0,1]$
+};
+
+% Gatekeeper / Calibration Operator
+\node[gate, text width=3.8cm, right=1.0cm of manas] (gatekeeper) {
+    \textbf{Epistemic Calibration}\\
+    \scriptsize
+    $\kappa' = \min\left(\kappa_0 \prod (1 - \delta_i), \kappa_{\max}\right)$\\
+    \rule{3.6cm}{0.4pt}\\
+    \scriptsize
+    $\kappa' < 0.35 \implies$ \textbf{\textcolor{red!80!black}{ABSTAIN ($\alpha=1$)}}\\
+    $\kappa' \ge 0.35 \implies$ \textbf{\textcolor{green!60!black}{ACCEPT / FLAG}}
+};
+
+% Verifier Box Container
+\node[sys2, text width=13.6cm, minimum height=3.8cm, below=1.0cm of manas.south west, anchor=north west] (buddhi_box) {};
+\node[labelnode, anchor=north west, inner sep=6pt] at (buddhi_box.north west) {
+    System 2 Epistemic Verifier (\textit{Buddhi})
+};
+
+% Inside Buddhi: Three verification pillars
+\node[box, fill=orange!12, draw=orange!80, text width=3.8cm] (adhyasa) at ($(buddhi_box.west)+(2.4, -0.4)$) {
+    \textbf{\textit{Adhy\=asa} Discriminator}\\
+    \scriptsize 7 Cognitive Checkers:\\
+    \tiny
+    $\bullet$ Correlation $\ne$ Causation\\
+    $\bullet$ Scope Inflation ($N=1 \to \forall$)\\
+    $\bullet$ Asker Projection (Sycophancy)\\
+    $\bullet$ Frequency $\ne$ Ground Truth\\
+    $\bullet$ Absence Confusion\\
+    $\bullet$ Self-Output as Evidence\\
+    $\bullet$ Source Misattribution
+};
+
+\node[box, fill=orange!12, draw=orange!80, text width=3.6cm] (pramana) at ($(adhyasa.east)+(2.4, 0)$) {
+    \textbf{\textit{Pram\=a\d{n}a} Modality Gate}\\
+    \scriptsize Modality Ceilings $\kappa_{\max}(\pi)$:\\
+    \tiny
+    Pratyak\d{s}a (Direct) $\le 0.95$\\
+    Anum\=ana (Deductive) $\le 0.85$\\
+    \'Sabda (Testimony) $\le 0.80$\\
+    Anupalabdhi (Absence) $\le 0.70$\\
+    Arth\=apatti (Abduction) $\le 0.65$\\
+    Upam\=ana (Analogy) $\le 0.60$
+};
+
+\node[box, fill=orange!12, draw=orange!80, text width=3.6cm] (causal) at ($(pramana.east)+(2.4, 0)$) {
+    \textbf{Causal Sandbox}\\
+    \scriptsize Judea Pearl $do$-Calculus:\\
+    \tiny
+    Observational: $P(Y \mid X)$\\
+    Interventional: $P(Y \mid do(X))$\\
+    ATE \& Confounding Audit\\
+    Simpson's Reversal Check
+};
+
+% Epistemic Memory: Citta
+\node[mem, text width=13.6cm, below=0.6cm of buddhi_box] (citta) {
+    \textbf{Persistent Epistemic Store (\textit{Citta})}\\
+    \scriptsize Dense Semantic Indexing (\texttt{all-MiniLM-L6-v2}) \quad $\bullet$ \quad Contradiction Resolution \quad $\bullet$ \quad \textbf{Belief Sublation (\textit{B\=adha})}: Auto-Tombstones Overruled Beliefs
+};
+
+% Interconnecting Arrows
+\draw[arrow] (query) -- (manas);
+\draw[arrow] (manas) -- (gatekeeper);
+
+\draw[arrow] (manas.south) -- ++(0,-0.3) -| (adhyasa.north);
+\draw[arrow] (manas.south) -- ++(0,-0.3) -| (pramana.north);
+\draw[arrow] (manas.south) -- ++(0,-0.3) -| (causal.north);
+
+\draw[arrow] (adhyasa.south) -- ++(0,-0.2) |- (citta.west);
+\draw[arrow] (causal.east) -| (gatekeeper.south);
+
+\draw[arrow] (gatekeeper.south) -- ++(0,-0.5) -| ($(citta.east)+(-0.5,0.4)$);
+
+\end{tikzpicture}
+\caption{The \textbf{Ny\=aya-Pram\=a\d{n}a} Dual-System Architecture. System 1 (\textit{Manas}) produces a 5-part syllogism, audited by System 2 (\textit{Buddhi}) through fallacy interception, modality ceilings, and causal intervention. Accepted claims update persistent memory (\textit{Citta}), where sublation (\textit{B\=adha}) resolves contradictions.}
+\label{fig:architecture}
+\end{figure*}

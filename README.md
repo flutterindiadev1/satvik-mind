@@ -1,6 +1,27 @@
 # Epistemic Engine: Neuro-Symbolic Verification Architecture
 
+[![Paper](https://img.shields.io/badge/Paper-arXiv%3A2026.XXXXX-B31B1B.svg)](paper/manuscript.md)
+[![Tests](https://img.shields.io/badge/Tests-30%20Passed-brightgreen.svg)](tests/)
+[![ECE](https://img.shields.io/badge/ECE-0.0670%20(Calibrated)-blue.svg)](evals/results/calibration_data.json)
+[![Fallacy%20Interception](https://img.shields.io/badge/Fallacy%20Interception-100%25-success.svg)](evals/results/fallacy_eval_results.csv)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 **A calibrated, dual-process reasoning system designed to eliminate hallucination, enforce evidence provenance, and resist sycophancy.**
+
+> 📄 **Academic Paper**: *"Nyāya-Pramāṇa: A Neuro-Symbolic Epistemic Verification Framework for Calibrated, Provenance-Aware LLM Reasoning"*  
+> Full Preprint: [`paper/manuscript.md`](paper/manuscript.md) | Master LaTeX: [`paper/main.tex`](paper/main.tex) | arXiv Package: [`paper/arxiv_submission.tar.gz`](paper/arxiv_submission.tar.gz)
+
+---
+
+## Benchmark Results
+
+| Metric / Benchmark | Baseline Unconstrained LLM | **Nyāya-Pramāṇa (This Work)** | Improvement |
+|---|:---:|:---:|---|
+| **Expected Calibration Error (ECE)** | $\approx 0.25 - 0.35$ (severe overconfidence) | **0.0670** | Near-diagonal calibration; confidence matches empirical accuracy |
+| **Brier Score / MCE** | High | **0.1727** / **0.1250** | Strong probabilistic reliability across all 5 confidence bins |
+| **Fallacy Interception ($N=50$)** | Vulnerable to sycophancy & correlation | **100.0% (50/50)** | Intercepts all 7 cognitive fallacy classes deterministically |
+| **TruthfulQA Calibrated Abstention** | 0.0% (100% hallucinated completions) | **40.0%** (abstains on subjective/unverifiable) | Eliminates hallucinations via structured machine-readable codes |
+| **Verified Truthful Acceptance** | Unverified text | **60.0%** verified with cited *Pramāṇa* | Grounded via *Śabda*, *Pratyakṣa*, and *Anumāna* |
 
 ---
 
@@ -172,26 +193,39 @@ print("Conclusion:", result.claim.nigamana)
 print("Evidence Modality:", result.claim.pramana.value)
 ```
 
-### 4. Running the Evaluation Suite
+### 4. Running the Evaluation Suite & Reproducing Paper Results
 
 ```bash
-python3 evals/eval_sattvic.py
-```
+# 1. Run all unit tests
+pytest tests/
 
-The test suite evaluates three primary epistemic axes:
-1. **Epistemic Abstention**: Correctly abstaining from unanswerable or impossible queries.
-2. **Sycophancy & Fallacy Resistance**: Resisting leading questions and rejecting personal opinion requests.
-3. **Factual Grounding**: Validating verifiable factual queries with external evidence.
+# 2. Run the 50-item adversarial fallacy interception benchmark
+python evals/fallacy_eval.py
+
+# 3. Run the calibration evaluation (ECE & Brier score)
+python evals/calibration_eval.py
+
+# 4. Run TruthfulQA comparative evaluation
+python evals/truthfulqa_eval.py
+
+# 5. Re-compile all LaTeX tables and summary metrics
+python evals/compile_paper_tables.py
+```
 
 ---
 
-## Epistemological Foundations
+## Citation
 
-While the engine is implemented using modern neuro-symbolic techniques, Pydantic schemas, and OpenTelemetry logging, the faculty separation and verification hierarchy draw theoretical inspiration from formal classical epistemology:
-- **Faculty Separation**: The division between candidate generation and determinative judgment mirrors classical dual-process cognitive theories and the *Antaḥkaraṇa* functional taxonomy.
-- **5-Part Syllogism**: The argument schema directly instantiates the classical *Nyāya* five-member inference (*pañcāvayava*).
-- **Evidence Hierarchy**: The verification modalities correspond to the *Pramāṇa* taxonomy (*Pratyakṣa*, *Anumāna*, *Śabda*, *Anupalabdhi*, *Upamāna*, *Arthāpatti*).
-- **Sublation**: Truth maintenance operationalizes the principle of *Bādha* (sublation of lower-order epistemic claims by higher-order empirical evidence).
+If you build upon or cite this framework in your research, please use:
+
+```bibtex
+@article{rajguru2026nyayapramana,
+  title={Ny{\=a}ya-Pram{\=a}{\d{n}}a: A Neuro-Symbolic Epistemic Verification Framework for Calibrated, Provenance-Aware LLM Reasoning},
+  author={Rajguru, Nitish},
+  journal={arXiv preprint arXiv:2026.XXXXX},
+  year={2026}
+}
+```
 
 ---
 

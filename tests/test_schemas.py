@@ -4,7 +4,7 @@ Run with: pytest tests/test_schemas.py -v
 """
 
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 
 from pramana.schemas import (
     AbsenceRecord,
@@ -77,7 +77,7 @@ def test_belief_active_by_default():
         id="b-001",
         claim=make_claim(),
         origin="read",
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     assert belief.is_active
 
@@ -87,7 +87,7 @@ def test_belief_sublation():
         id="b-001",
         claim=make_claim(),
         origin="read",
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     sublated = belief.sublate(by_id="b-002")
     assert sublated.status == "sublated"

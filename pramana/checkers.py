@@ -90,8 +90,8 @@ class ScopeInflationChecker(AdhyasaChecker):
         universal_in_rule = bool(_UNIVERSAL_QUANTIFIERS.search(claim.udaharana))
         # Heuristic: if the hetu mentions a single case or "in this study / in this example"
         limited_hetu = bool(re.search(
-            r"\b(in this (case|study|example|instance|experiment)|one (case|instance|example)|"
-            r"a single|this particular|the one|in this one|one study|one experiment)\b",
+            r"\b(in this (case|study|example|instance|experiment)|(a |this )?single (case|instance|example|study|experiment)|"
+            r"one (case|instance|example)|a single|this particular|the one|in this one|one study|one experiment)\b",
             claim.hetu, re.IGNORECASE,
         ))
         return universal_in_rule and limited_hetu
@@ -138,7 +138,7 @@ class AbsenceConfusionChecker(AdhyasaChecker):
 
         absence_language = bool(re.search(
             r"\b(does not exist|no evidence|not found|absent|cannot be found|"
-            r"there (is|are) no|no \w+ (exists?|found|available))\b",
+            r"there (is|are) no|no\s+[\w\s]{1,30}?\s+(exists?|found|available|present))\b",
             claim.nigamana, re.IGNORECASE,
         ))
         # Flagged if absence language is used but pramāṇa is NOT anupalabdhi
@@ -151,6 +151,85 @@ class AbsenceConfusionChecker(AdhyasaChecker):
 
 
 # ---------------------------------------------------------------------------
+# Checker 2 – Text frequency confused with truth (label: frequency_truth)
+# ---------------------------------------------------------------------------
+
+class FrequencyTruthChecker(AdhyasaChecker):
+    """
+    Flags when a claim relies on popularity, repetition, or corpus prevalence
+    (millions of people, everyone says, ubiquitous in literature) as proof of fact.
+    """
+
+    def __init__(self) -> None:
+        from pramana.schemas import AdhyasaLabel
+        self.label = AdhyasaLabel.FREQUENCY_TRUTH
+
+    def check(self, claim: "Claim") -> bool:
+        _FREQUENCY_MARKERS = re.compile(
+            r"\b(millions of|popular belief|widely cited|everyone (says|claims)|"
+            r"corpus frequency|cultural (consensus|prevalence)|ubiquitous in literature|"
+            r"constantly say|frequently claim|common repetition|prevalent across|"
+            r"popular proverb|hundreds of articles)\b",
+            re.IGNORECASE,
+        )
+        return bool(_FREQUENCY_MARKERS.search(claim.hetu) or _FREQUENCY_MARKERS.search(claim.nigamana))
+
+
+# ---------------------------------------------------------------------------
+# Checker 3 – Source attribution confusion (label: source_confusion)
+# ---------------------------------------------------------------------------
+
+class SourceConfusionChecker(AdhyasaChecker):
+    """
+    Flags when unverified external hearsay/rumor/blogs are misrepresented as
+    direct empirical observation (pratyakṣa / sensor measurement).
+    """
+
+    def __init__(self) -> None:
+        from pramana.schemas import AdhyasaLabel, Pramana
+        self.label = AdhyasaLabel.SOURCE_CONFUSION
+
+    def check(self, claim: "Claim") -> bool:
+        from pramana.schemas import Pramana
+        _UNVERIFIED_SOURCES = re.compile(
+            r"\b(blog|rumors?|tabloid|forum|podcast|influencer|social media|second-hand|anecdotal|hearsay)\b",
+            re.IGNORECASE,
+        )
+        _SENSOR_LANGUAGE = re.compile(
+            r"\b(sensor|instruments?|spectroscop\w+|dynamometer|biopsy|telemetry|directly observed|directly measured|mass spectrometry)\b",
+            re.IGNORECASE,
+        )
+        has_hearsay = bool(_UNVERIFIED_SOURCES.search(claim.hetu))
+        claims_observation = (claim.pramana == Pramana.PRATYAKSA) or bool(_SENSOR_LANGUAGE.search(claim.nigamana))
+        return has_hearsay and claims_observation
+
+
+# ---------------------------------------------------------------------------
+# Checker 6 – Asker projection / Sycophancy (label: asker_projection)
+# ---------------------------------------------------------------------------
+
+class AskerProjectionChecker(AdhyasaChecker):
+    """
+    Flags when reasoning exhibits sycophancy, flattering or deferring to the user's
+    stated premise rather than objective truth.
+    """
+
+    def __init__(self) -> None:
+        from pramana.schemas import AdhyasaLabel
+        self.label = AdhyasaLabel.ASKER_PROJECTION
+
+    def check(self, claim: "Claim") -> bool:
+        _SYCOPHANCY_MARKERS = re.compile(
+            r"\b(as you (noted|said|stated|believe|pointed out)|you are (right|correct) that|"
+            r"user (indicates|asserts|prefers)|agreeing with (the )?user|conceding to|"
+            r"aligning with (the )?user|echoing (the )?user|flattering (the )?user|"
+            r"(accepting|adopting|conforming to) (the )?user('s)? (premise|perspective|assertion))\b",
+            re.IGNORECASE,
+        )
+        return bool(_SYCOPHANCY_MARKERS.search(claim.hetu) or _SYCOPHANCY_MARKERS.search(claim.nigamana))
+
+
+# ---------------------------------------------------------------------------
 # Composite runner
 # ---------------------------------------------------------------------------
 
@@ -159,6 +238,9 @@ RULE_BASED_CHECKERS: list[AdhyasaChecker] = [
     ScopeInflationChecker(),
     SelfOutputAsEvidenceChecker(),
     AbsenceConfusionChecker(),
+    FrequencyTruthChecker(),
+    SourceConfusionChecker(),
+    AskerProjectionChecker(),
 ]
 
 

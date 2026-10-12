@@ -1,0 +1,43 @@
+{
+  "sample_size": 40,
+  "expected_calibration_error_ece": 0.067,
+  "maximum_calibration_error_mce": 0.125,
+  "brier_score": 0.1727,
+  "bins": [
+    {
+      "bin_range": "[0.0, 0.2]",
+      "count": 2,
+      "avg_confidence": 0.125,
+      "accuracy": 0.0,
+      "calibration_gap": 0.125
+    },
+    {
+      "bin_range": "[0.2, 0.4]",
+      "count": 6,
+      "avg_confidence": 0.283,
+      "accuracy": 0.167,
+      "calibration_gap": 0.117
+    },
+    {
+      "bin_range": "[0.4, 0.6]",
+      "count": 7,
+      "avg_confidence": 0.55,
+      "accuracy": 0.429,
+      "calibration_gap": 0.121
+    },
+    {
+      "bin_range": "[0.6, 0.8]",
+      "count": 14,
+      "avg_confidence": 0.705,
+      "accuracy": 0.714,
+      "calibration_gap": 0.009
+    },
+    {
+      "bin_range": "[0.8, 1.0]",
+      "count": 11,
+      "avg_confidence": 0.886,
+      "accuracy": 0.818,
+      "calibration_gap": 0.068
+    }
+  ]
+}
