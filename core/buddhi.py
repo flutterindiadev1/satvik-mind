@@ -42,13 +42,13 @@ class BuddhiResult:
             )
         prefix = "[FLAG] " if self.verdict == Verdict.FLAG_AND_ACCEPT else ""
         flags_text = (
-            f"\n⚠ Adhyāsa flags: {', '.join(f.value for f in self.claim.adhyasa_flags)}"
+            f"\n⚠ Epistemic Fallacy Flags: {', '.join(f.value for f in self.claim.adhyasa_flags)}"
             if self.claim.adhyasa_flags else ""
         )
         return (
             f"{prefix}{self.claim.nigamana}\n"
             f"Confidence: {self.claim.confidence:.0%} "
-            f"(pramāṇa: {self.claim.pramana.value})"
+            f"(evidence: {self.claim.pramana.value})"
             f"{flags_text}"
         )
 
@@ -100,7 +100,7 @@ class Buddhi:
         if checked.abstain or checked.confidence < self.abstain_threshold:
             verdict = Verdict.ABSTAIN
             if checked.abstain:
-                reason_msg = checked.hetu if checked.hetu else "Manas (Proposer) abstained because the query is likely an opinion or lacks verifiable evidence."
+                reason_msg = checked.hetu if checked.hetu else "Hypothesis Proposer abstained because the query is subjective, lacks verifiable evidence, or requests personal opinion."
                 reasons.append(f"Proposer Abstention: {reason_msg}")
             if checked.confidence < self.abstain_threshold:
                 reasons.append(

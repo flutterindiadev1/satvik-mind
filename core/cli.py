@@ -46,26 +46,26 @@ def _render_result(result: "BuddhiResult", run_id: str) -> None:  # noqa: F821
 
     # Argument table
     tbl = Table(show_header=False, box=None, padding=(0, 1))
-    tbl.add_column(style="dim", width=14)
+    tbl.add_column(style="dim", width=18)
     tbl.add_column()
-    tbl.add_row("Pratijna",  claim.pratijna)
-    tbl.add_row("Hetu",      claim.hetu)
-    tbl.add_row("Udāharana", claim.udaharana)
-    tbl.add_row("Upanaya",   claim.upanaya)
-    tbl.add_row("Nigamana",  f"[bold]{claim.nigamana}[/bold]")
-    tbl.add_row("",          "")
-    tbl.add_row("Pramāṇa",   f"[cyan]{claim.pramana.value}[/cyan]")
-    tbl.add_row("Confidence",f"{claim.confidence:.0%}")
-    tbl.add_row("Verdict",   f"[{colour}]{verdict.value.upper()}[/{colour}]")
+    tbl.add_row("Thesis (Claim)",   claim.pratijna)
+    tbl.add_row("Ground (Hetu)",     claim.hetu)
+    tbl.add_row("Rule (Udāharaṇa)",  claim.udaharana)
+    tbl.add_row("Case Application",  claim.upanaya)
+    tbl.add_row("Conclusion",        f"[bold]{claim.nigamana}[/bold]")
+    tbl.add_row("",                  "")
+    tbl.add_row("Evidence Modality", f"[cyan]{claim.pramana.value}[/cyan]")
+    tbl.add_row("Confidence",        f"{claim.confidence:.0%}")
+    tbl.add_row("Verdict",           f"[{colour}]{verdict.value.upper()}[/{colour}]")
 
     if claim.adhyasa_flags:
         flags_str = ", ".join(f.value for f in claim.adhyasa_flags)
-        tbl.add_row("Adhyāsa ⚠", f"[red]{flags_str}[/red]")
+        tbl.add_row("Fallacies Flagged ⚠", f"[red]{flags_str}[/red]")
 
     if result.reasons:
         tbl.add_row("Reasons", "; ".join(result.reasons))
 
-    console.print(Panel(tbl, title=f"[bold]Sāttvic Mind · run {run_id[:8]}[/bold]", border_style=colour))
+    console.print(Panel(tbl, title=f"[bold]Epistemic Engine · run {run_id[:8]}[/bold]", border_style=colour))
 
 
 def main() -> None:
@@ -74,7 +74,7 @@ def main() -> None:
         sys.exit(1)
 
     query = " ".join(sys.argv[1:])
-    console.rule("[bold cyan]Sāttvic Mind[/bold cyan]")
+    console.rule("[bold cyan]Epistemic Engine[/bold cyan]")
     console.print(f"Query: [italic]{query}[/italic]\n")
 
     pipeline = Pipeline(PipelineConfig())

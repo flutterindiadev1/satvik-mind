@@ -15,8 +15,8 @@ import streamlit as st
 from core.pipeline import Pipeline, PipelineConfig
 
 st.set_page_config(
-    page_title="Sāttvic Mind",
-    page_icon="🧘",
+    page_title="Epistemic Engine | Calibrated Reasoning",
+    page_icon="⚡",
     layout="wide"
 )
 
@@ -24,17 +24,18 @@ st.set_page_config(
 if "pipeline" not in st.session_state:
     st.session_state.pipeline = Pipeline(PipelineConfig())
 
-st.title("Sāttvic Mind")
-st.markdown("### 🧘 An epistemological reasoning engine to verify facts and logical arguments")
+st.title("⚡ Epistemic Engine")
+st.markdown("### Enterprise Neuro-Symbolic Verification & Calibrated Reasoning System")
+st.caption("Dual-Process Architecture • Grounded Evidence Hierarchy • Automated Fallacy Detection • Truth Maintenance")
 
 # Sidebar for Config & Trace Logs
 with st.sidebar:
-    st.header("⚙️ Settings")
-    provider = st.selectbox("AI Model Provider", ["openai", "anthropic"], index=0)
-    temperature = st.slider("Creativity (Temperature)", 0.0, 1.0, 0.2, 0.1)
-    abstain_threshold = st.slider("Uncertainty Threshold", 0.0, 1.0, 0.35, 0.05)
+    st.header("⚙️ Engine Configuration")
+    provider = st.selectbox("LLM Provider", ["openai", "anthropic"], index=0)
+    temperature = st.slider("Proposer Temperature", 0.0, 1.0, 0.2, 0.1, help="Sampling randomness for candidate hypothesis generation")
+    abstain_threshold = st.slider("Uncertainty Threshold", 0.0, 1.0, 0.35, 0.05, help="Minimum posterior confidence required to accept a claim without abstaining")
     
-    if st.button("Update Settings"):
+    if st.button("Apply Settings", use_container_width=True):
         st.session_state.pipeline = Pipeline(
             PipelineConfig(
                 provider=provider,
@@ -42,86 +43,116 @@ with st.sidebar:
                 abstain_threshold=abstain_threshold
             )
         )
-        st.success("Settings updated!")
+        st.success("Configuration updated successfully.")
         
     st.divider()
-    st.header("🔍 System State")
-    st.info("The system continuously monitors itself for hallucinations and confident ignorance.")
+    st.header("🛡️ System Integrity")
+    st.markdown("""
+    - **Dual-Process Verification**: System 1 proposal filtered by System 2 verification.
+    - **Sycophancy Resistance**: Zero persona bias; objective evaluation only.
+    - **Active Calibration**: Rejection of ungrounded or speculative assertions.
+    """)
 
-tab1, tab2, tab3 = st.tabs(["🗣️ Reasoning Engine", "👁️ Sākṣī (Witness Logs)", "🧠 Citta (Memory)"])
+tab1, tab2, tab3 = st.tabs([
+    "⚡ Reasoning & Verification",
+    "📊 Audit & Telemetry Log",
+    "💾 Provenance Belief Store"
+])
+
+# Human-readable mapping for evidence modalities
+MODALITY_MAP = {
+    "pratyaksa": "Direct Observation (Tool Execution / Code)",
+    "anumana": "Formal Deduction (Causal / Logical Inference)",
+    "sabda": "External Authority (Cited Retrieval / RAG)",
+    "anupalabdhi": "Negative Proof (Verified Absence)",
+    "upamana": "Comparative Analogy",
+    "arthapatti": "Abductive Postulation"
+}
+
+FALLACY_MAP = {
+    "correlation_causation": "Correlation Confused with Causation",
+    "frequency_truth": "Text Frequency Confused with Factuality",
+    "source_confusion": "Testimony Misrepresented as Direct Observation",
+    "scope_inflation": "Scope Inflation (Particular Generalised to Universal)",
+    "self_output_as_evidence": "Circular Reasoning (Self-Output as Evidence)",
+    "asker_projection": "Sycophancy (Answer Bent to User's Stated Bias)",
+    "absence_confusion": "Unretrieved Evidence Assumed as Non-Existence"
+}
 
 with tab1:
-    query = st.text_area("Ask a question:", height=100)
-    if st.button("Submit", type="primary"):
+    query = st.text_area("Input Prompt / Claim for Verification:", height=100, placeholder="Enter any factual query, reasoning prompt, or subjective statement...")
+    if st.button("Evaluate Claim", type="primary", use_container_width=True):
         if not query.strip():
             st.warning("Please enter a query.")
         else:
-            with st.spinner("Analyzing and verifying..."):
+            with st.spinner("Executing hypothesis generation, verification passes, and telemetry logging..."):
                 try:
-                    # Run the pipeline
                     result = st.session_state.pipeline.run(query)
                     
-                    # Show results based on verdict
                     st.divider()
-                    st.subheader("Results")
+                    st.subheader("Verification Decision")
                     
                     if result.verdict == "abstain":
-                        st.error("⚠️ **System Verdict:** ABSTAIN")
-                        st.write("I do not have enough evidence to answer this question with high confidence.")
-                        st.write("**Reasons:**")
+                        st.error("🛑 **System Verdict:** ABSTAIN")
+                        st.markdown("**The engine abstained from asserting a definitive claim.**")
+                        st.markdown("##### Abstention Diagnostics:")
                         for reason in result.reasons:
-                            st.write(f"- {reason}")
+                            st.markdown(f"- {reason}")
                         
                     else:
                         st.success("✅ **System Verdict:** VERIFIED")
-                        st.markdown("### Answer")
+                        st.markdown("### Verified Conclusion")
                         st.write(result.output_text)
                         
                         if result.claim:
                             st.divider()
-                            st.markdown("### 🏛️ How I Reached This Conclusion")
+                            st.markdown("### 🏛️ Formal Deductive Structure")
                             
-                            col1, col2 = st.columns(2)
+                            col1, col2 = st.columns([3, 2])
                             
                             with col1:
-                                st.markdown("#### The 5-Step Logic")
-                                st.markdown(f"**1. Claim:** {result.claim.pratijna}")
-                                st.markdown(f"**2. Reason:** {result.claim.hetu}")
-                                st.markdown(f"**3. General Rule:** {result.claim.udaharana}")
-                                st.markdown(f"**4. Application:** {result.claim.upanaya}")
-                                st.markdown(f"**5. Final Conclusion:** {result.claim.nigamana}")
+                                st.markdown("#### Deductive Argument Chain")
+                                st.markdown(f"**1. Core Thesis:** {result.claim.pratijna}")
+                                st.markdown(f"**2. Grounding Premise:** {result.claim.hetu}")
+                                st.markdown(f"**3. Invariant Principle:** {result.claim.udaharana}")
+                                st.markdown(f"**4. Case Application:** {result.claim.upanaya}")
+                                st.markdown(f"**5. Deductive Conclusion:** {result.claim.nigamana}")
                                 
                             with col2:
-                                st.markdown("#### Evidence & Validity")
-                                st.info(f"**Source Type:** {result.claim.pramana.value.upper()}")
-                                st.metric(label="Confidence Level", value=f"{result.claim.confidence:.2f}")
+                                st.markdown("#### Evidence & Calibration")
+                                modality_label = MODALITY_MAP.get(result.claim.pramana.value, result.claim.pramana.value.upper())
+                                st.info(f"**Evidence Modality:**\n{modality_label}")
+                                st.metric(label="Calibrated Confidence", value=f"{result.claim.confidence:.1%}")
                                 
                                 if result.claim.evidence_refs:
-                                    st.write("**References:**")
+                                    st.write("**Evidence References:**")
                                     for ref in result.claim.evidence_refs:
-                                        st.write(f"- {ref}")
+                                        st.write(f"- `{ref}`")
                                 
                                 if result.claim.adhyasa_flags:
-                                    st.warning("**Logical Fallacies Detected:**")
+                                    st.warning("**Epistemic Caveats / Fallacies Flagged:**")
                                     for flag in result.claim.adhyasa_flags:
-                                        st.write(f"- 🚩 {flag}")
+                                        human_flag = FALLACY_MAP.get(flag.value, flag.value)
+                                        st.write(f"- ⚠️ **{human_flag}** (`{flag.value}`)")
                                 else:
-                                    st.success("No logical fallacies detected.")
+                                    st.success("No epistemic fallacies or biases detected.")
                 except Exception as e:
-                    st.error(f"Error executing pipeline: {str(e)}")
+                    st.error(f"Error executing verification pipeline: {str(e)}")
 
 with tab2:
-    st.header("Sākṣī (The Witness)")
-    st.info("Sākṣī is the read-only observer. It monitors traces, LLM calls, and internal states without interfering.")
+    st.header("Audit & Telemetry Log")
+    st.info("Independent, append-only telemetry observer. Monitors execution traces, LLM transactions, tool calls, and state transitions without modifying pipeline state.")
     
-    if st.button("Refresh Logs"):
-        pass # Streamlit reruns on button click
+    col_ref, col_spacer = st.columns([2, 8])
+    with col_ref:
+        if st.button("Refresh Telemetry", use_container_width=True):
+            pass
         
     log_files = sorted(glob.glob("traces/*.jsonl"), reverse=True)
     if not log_files:
-        st.write("No trace logs found.")
+        st.write("No telemetry logs found.")
     else:
-        selected_log = st.selectbox("Select Log File", log_files)
+        selected_log = st.selectbox("Telemetry Session Log", log_files)
         if selected_log:
             with open(selected_log, 'r') as f:
                 logs = [json.loads(line) for line in f if line.strip()]
@@ -134,22 +165,36 @@ with tab2:
                     runs[run_id] = []
                 runs[run_id].append(log)
                 
+            st.caption(f"Displaying {len(runs)} execution runs from `{selected_log}`:")
             for run_id, run_logs in runs.items():
-                with st.expander(f"Run ID: {run_id[:8]}..."):
+                with st.expander(f"Run ID: {run_id}"):
                     for entry in run_logs:
                         st.json(entry)
 
 with tab3:
-    st.header("Citta (The Memory Store)")
-    st.info("Citta stores verified beliefs. If a claim is ACCEPTED by Buddhi, it is deposited here and can be used as context for future reasoning.")
+    st.header("Provenance Belief Store")
+    st.info("Persistent truth-maintenance memory store. Verified claims are recorded with evidence provenance and monitored for revision (sublation) when higher-confidence evidence arrives.")
     
-    if st.button("Refresh Memory"):
-        pass
+    col_mem_ref, _ = st.columns([2, 8])
+    with col_mem_ref:
+        if st.button("Refresh Belief Store", use_container_width=True):
+            pass
         
     beliefs = st.session_state.pipeline.citta.get_active_beliefs()
     if not beliefs:
-        st.write("Citta is currently empty. Verified beliefs will appear here.")
+        st.write("Belief store currently empty. Verified assertions will be catalogued here.")
     else:
         df = pd.DataFrame(beliefs)
-        display_cols = ["pratijna", "pramana", "confidence", "origin", "created_at"]
-        st.dataframe(df[display_cols], use_container_width=True)
+        # Map internal column names to clean enterprise headers
+        rename_dict = {
+            "pratijna": "Thesis / Claim",
+            "pramana": "Evidence Modality",
+            "confidence": "Confidence",
+            "origin": "Origin",
+            "created_at": "Timestamp"
+        }
+        display_df = df[["pratijna", "pramana", "confidence", "origin", "created_at"]].copy()
+        display_df["pramana"] = display_df["pramana"].apply(lambda p: MODALITY_MAP.get(p, p))
+        display_df["confidence"] = display_df["confidence"].apply(lambda c: f"{c:.1%}")
+        display_df.rename(columns=rename_dict, inplace=True)
+        st.dataframe(display_df, use_container_width=True)

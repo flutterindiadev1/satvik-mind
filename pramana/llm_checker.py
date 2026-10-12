@@ -13,16 +13,16 @@ def run_llm_checkers(claim: Claim, query: str) -> List[AdhyasaLabel]:
         client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
         
         prompt = f"""
-        You are the Buddhi (verifier) component of an AI system.
-        Analyze this claim against the original user query for three specific fallacies:
+        You are the Epistemic Verifier (System 2 Discriminator) of an enterprise AI reasoning system.
+        Analyze this claim against the original user query for three specific epistemic fallacies:
         
-        1. frequency_truth: The claim assumes something is factually true just because it is commonly said online or highly popular in text, without citing a valid empirical or logical source.
-        2. source_confusion: The claim cites 'testimony' (someone else's words) but treats it as direct physical 'perception' (pratyaksa).
-        3. asker_projection: The claim twists the truth to flatter or agree with the user's premise in the query (sycophancy).
+        1. frequency_truth: The claim assumes something is factually true merely because it is commonly asserted online or popular in text corpora, without citing an empirical or causal ground.
+        2. source_confusion: The claim cites unverified external testimony/hearsay but misrepresents it as direct empirical observation (sensor/tool execution).
+        3. asker_projection: The claim exhibits sycophancy (twisting facts or agreeing with the user's biased/leading premise rather than remaining objective).
         
         User Query: "{query}"
         Claim: "{claim.nigamana}"
-        Pramana (Source Type): {claim.pramana.value}
+        Evidence Modality: {claim.pramana.value}
         Reasoning: "{claim.hetu}"
         
         Return ONLY a JSON array of strings containing any of these labels if they apply (e.g. ["asker_projection"]). Return [] if none apply.
