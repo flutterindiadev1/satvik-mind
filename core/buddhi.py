@@ -87,6 +87,12 @@ class Buddhi:
                         new_flags.append(f)
                 checked = checked.model_copy(update={"adhyasa_flags": new_flags})
 
+        # Step 1.6: Apply epistemic penalty for detected fallacies
+        if checked.adhyasa_flags:
+            penalty = 0.25 * len(checked.adhyasa_flags)
+            penalized_conf = max(0.0, checked.confidence - penalty)
+            checked = checked.model_copy(update={"confidence": penalized_conf})
+
         tracer.log(run_id, TraceEvent.CHECKER_RUN, {
             "adhyasa_flags": [f.value for f in checked.adhyasa_flags],
             "confidence_before": claim.confidence,
@@ -103,8 +109,9 @@ class Buddhi:
                 reason_msg = checked.hetu if checked.hetu else "Hypothesis Proposer abstained because the query is subjective, lacks verifiable evidence, or requests personal opinion."
                 reasons.append(f"Proposer Abstention: {reason_msg}")
             if checked.confidence < self.abstain_threshold:
+                flag_note = f" (penalized by fallacies: {', '.join(f.value for f in checked.adhyasa_flags)})" if checked.adhyasa_flags else ""
                 reasons.append(
-                    f"Confidence ({checked.confidence:.2f}) is below the required threshold ({self.abstain_threshold})."
+                    f"Calibrated confidence ({checked.confidence:.2f}) is below the required threshold ({self.abstain_threshold}){flag_note}."
                 )
         elif checked.adhyasa_flags:
             verdict = Verdict.FLAG_AND_ACCEPT

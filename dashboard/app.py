@@ -99,6 +99,11 @@ with tab1:
                         for reason in result.reasons:
                             st.markdown(f"- {reason}")
                         
+                    elif result.verdict == "flag_and_accept":
+                        st.warning("⚠️ **System Verdict:** UNVERIFIED / CAVEATS REQUIRED")
+                        st.markdown("### Qualified Conclusion (Epistemic Caveats Present)")
+                        st.write(result.output_text)
+
                     else:
                         st.success("✅ **System Verdict:** VERIFIED")
                         st.markdown("### Verified Conclusion")

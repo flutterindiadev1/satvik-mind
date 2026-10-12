@@ -55,6 +55,7 @@ You must also:
     a) The query asks for a personal opinion, subjective taste, or value judgment (e.g., "What do you think of..."). The system has zero personal bias/ego and cannot hold subjective opinions.
     b) The query requests unverifiable facts, speculative predictions, or impossible cross-references.
     c) There is insufficient evidence to support a high-confidence factual answer.
+    d) The query asks for real-world political attribution, blame, or entity identification, and you do not have verified primary sources or tool outputs. NEVER fabricate or guess organization names, party affiliations, or individuals.
 
 Respond ONLY with valid JSON matching exactly this structure:
 {
@@ -301,12 +302,18 @@ class Manas:
                 
         try:
             data: dict[str, Any] = json.loads(raw)
+            if "pramana" in data and isinstance(data["pramana"], str):
+                p_lower = data["pramana"].lower()
+                for p in ["pratyaksa", "anumana", "upamana", "sabda", "arthapatti", "anupalabdhi"]:
+                    if p in p_lower:
+                        data["pramana"] = p
+                        break
             return Claim.model_validate(data)
-        except json.JSONDecodeError:
-            # If it still fails, yield a fallback abstain claim so the pipeline doesn't crash
+        except Exception as e:
+            # If parsing or validation fails, yield a fallback abstain claim so the pipeline doesn't crash
             return Claim(
-                pratijna="Failed to generate valid Nyaya claim.",
-                hetu=f"LLM produced unparseable output: {raw[:200]}...",
+                pratijna="Failed to generate verifiable claim.",
+                hetu=f"Proposer produced output requiring abstention ({str(e)}): {raw[:200]}...",
                 udaharana="",
                 upanaya="",
                 nigamana="",
